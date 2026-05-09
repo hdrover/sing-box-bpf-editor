@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sing-box BPF editor</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main>
+    <header>
+        <h1>sing-box BPF editor</h1>
+        <p class="tagline">
+            Online editor for sing-box
+            <code>.bpf</code> profile files (the binary export format of SFA/SFI/SFM clients).
+            Works entirely in your browser &mdash; nothing to install, no server, your profiles never leave your device.
+        </p>
+    </header>
+
+    <div class="toolbar">
+        <button id="load-button" type="button">Load .bpf file</button>
+        <input id="load-input" type="file" accept=".bpf" hidden>
+    </div>
+
+    <p id="status" class="status" data-kind="info" aria-live="polite"></p>
+
+    <form id="form" autocomplete="off" onsubmit="return false">
+        <div class="field">
+            <label for="name">Name</label>
+            <input id="name" type="text" required>
+            <div class="field-error" id="name-error" hidden></div>
+        </div>
+
+        <div class="field">
+            <span class="form-label">Type</span>
+            <div class="segmented" role="radiogroup" aria-label="Type">
+                <label class="segmented-option">
+                    <input type="radio" name="type" id="type-local" value="local" checked>
+                    <span>Local</span>
+                </label>
+                <label class="segmented-option">
+                    <input type="radio" name="type" id="type-remote" value="remote">
+                    <span>Remote</span>
+                </label>
+            </div>
+        </div>
+
+        <div id="remote-fields" class="remote-fields" hidden>
+            <div class="field">
+                <label for="url">URL</label>
+                <input id="url" type="url" placeholder="https://&hellip;">
+                <div class="field-error" id="url-error" hidden></div>
+            </div>
+
+            <div class="field">
+                <label class="checkbox">
+                    <input type="checkbox" id="auto-update" checked>
+                    <span>Auto-update</span>
+                </label>
+            </div>
+
+            <div id="interval-field" class="field">
+                <label for="interval">Auto-update interval (minutes)</label>
+                <input id="interval" type="number" value="60">
+                <div class="field-error" id="interval-error" hidden></div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="config">Config (JSON)</label>
+            <textarea id="config" rows="20" spellcheck="false" placeholder="Paste or edit the sing-box JSON config here&hellip;"></textarea>
+            <div class="field-error" id="config-error" hidden></div>
+        </div>
+
+        <div class="actions">
+            <button id="save-button" type="button">Save .bpf file</button>
+        </div>
+    </form>
+
+    <aside class="promo">
+        On Windows? Check out
+        <a href="https://github.com/hdrover/sing-box-drover"><strong>sing-box-drover</strong></a>
+        &mdash; a desktop sing-box client that uses these <code>.bpf</code> profiles.
+    </aside>
+
+    <footer>
+        <a href="https://github.com/hdrover/sing-box-bpf-editor">Source on GitHub</a>
+    </footer>
+</main>
+
+<script src="js/bpf.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
