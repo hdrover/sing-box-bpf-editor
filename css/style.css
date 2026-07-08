@@ -75,7 +75,43 @@ h1 {
 }
 
 .toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
     margin-bottom: 12px;
+}
+
+.toolbar-hint {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.drop-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(2px);
+}
+
+body.dropping .drop-overlay {
+    display: flex;
+}
+
+.drop-overlay-inner {
+    padding: 32px 48px;
+    border: 2px dashed var(--accent);
+    border-radius: 12px;
+    background: var(--field-bg);
+    color: var(--fg);
+    font-size: 1.1rem;
+    text-align: center;
+    pointer-events: none;
 }
 
 .status {

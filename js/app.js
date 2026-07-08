@@ -59,22 +59,82 @@
 
     els.loadButton.addEventListener("click", () => els.loadInput.click());
 
-    els.loadInput.addEventListener("change", async (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-        setStatus(`Loading ${file.name}…`);
+    const MAX_FILE_SIZE = 16 * 1024 * 1024;
+    const MiB = (bytes) => bytes / 1024 / 1024;
+
+    async function loadFromFile(file) {
+        const label = file.name || "profile";
+        if (file.size > MAX_FILE_SIZE) {
+            setStatus(`File is too large (${MiB(file.size).toFixed(1)} MiB, max ${MiB(MAX_FILE_SIZE)} MiB). This does not look like a .bpf profile.`, "error");
+            return;
+        }
+        setStatus(`Loading ${label}…`);
         try {
             const bytes = new Uint8Array(await file.arrayBuffer());
             const profile = await BPF.decode(bytes);
             populateForm(profile);
-            setStatus(`Loaded ${file.name}.`, "ok");
+            setStatus(`Loaded ${label}.`, "ok");
         } catch (err) {
             console.error(err);
             setStatus(`Failed to load: ${err.message}`, "error");
+        }
+    }
+
+    els.loadInput.addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            await loadFromFile(file);
         } finally {
             els.loadInput.value = "";
         }
     });
+
+    document.addEventListener("paste", (e) => {
+        const files = e.clipboardData && e.clipboardData.files;
+        if (!files || files.length === 0) return;
+        e.preventDefault();
+        loadFromFile(files[0]);
+    });
+
+    function hasFiles(e) {
+        return e.dataTransfer && Array.from(e.dataTransfer.types).includes("Files");
+    }
+
+    let dragDepth = 0;
+
+    function resetDropState() {
+        dragDepth = 0;
+        document.body.classList.remove("dropping");
+    }
+
+    document.addEventListener("dragenter", (e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        if (dragDepth++ === 0) document.body.classList.add("dropping");
+    });
+
+    document.addEventListener("dragover", (e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+    });
+
+    document.addEventListener("dragleave", (e) => {
+        if (!hasFiles(e)) return;
+        if (--dragDepth <= 0) resetDropState();
+    });
+
+    document.addEventListener("drop", (e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        resetDropState();
+        const file = e.dataTransfer.files[0];
+        if (file) loadFromFile(file);
+    });
+
+    document.addEventListener("dragend", resetDropState);
+    window.addEventListener("blur", resetDropState);
 
     function populateForm(p) {
         clearFieldErrors();

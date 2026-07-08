@@ -20,6 +20,7 @@
     <div class="toolbar">
         <button id="load-button" type="button">Load .bpf file</button>
         <input id="load-input" type="file" accept=".bpf" hidden>
+        <span class="toolbar-hint">or drag a <code>.bpf</code> file here, or paste one (Ctrl+V)</span>
     </div>
 
     <p id="status" class="status" data-kind="info" aria-live="polite"></p>
@@ -87,6 +88,10 @@
         <a href="https://github.com/hdrover/sing-box-bpf-editor">Source on GitHub</a>
     </footer>
 </main>
+
+<div id="drop-overlay" class="drop-overlay" aria-hidden="true">
+    <div class="drop-overlay-inner">Drop the <code>.bpf</code> file to load it</div>
+</div>
 
 <script src="js/bpf.js"></script>
 <script src="js/app.js"></script>
